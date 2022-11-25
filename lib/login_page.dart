@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'dart:developer';
 import 'dart:convert';
 
+import 'main.dart';
+
 
 class Controller extends GetxController{
   late String email;
@@ -40,9 +42,9 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: Container(
         padding: EdgeInsets.all(16),
-        child: new Form(
+        child: Form(
           key: formKey,
-          child: new Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               new TextFormField(
@@ -58,12 +60,12 @@ class _LoginPageState extends State<LoginPage> {
                 value!.isEmpty ? 'Password can\'t be empty' : null,
                 onSaved: (value) => controller.password = value!,
               ),
-              new ElevatedButton(
+              ElevatedButton(
                 child: new Text(
                   'Login',
                   style: new TextStyle(fontSize: 20.0),
                 ),
-                onPressed: validateAndSave,
+                onPressed: () async {validateAndSave(); requestPost();}
               ),
             ],
           ),
@@ -73,22 +75,40 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-_postRequest() async {
+// _postRequest() async {
+//
+//   final controller = Get.put(Controller());
+//   Uri url = Uri.parse('http://168.192.0.108/auth') as Uri;
+//
+//   http.Response response = await http.post(
+//     url,
+//     headers: <String, String> {
+//       'Content-Type' : 'application/x-www-form-urlencoded',
+//     },
+//     body: <String, String> {
+//       'email' : '$controller.email',
+//       'Password' : '$controller.password',
+//     }
+//   );
+// }
 
+// Flutter에서 controller로 입력 받은 내용을 Flask url로 POST하는 코드
+
+requestPost() async {
   final controller = Get.put(Controller());
-  Uri url = Uri.parse('http://168.192.0.108/auth') as Uri;
-
-  http.Response response = await http.post(
-    url,
-    headers: <String, String> {
-      'Content-Type' : 'application/x-www-form-urlencoded',
-    },
-    body: <String, String> {
-      'email' : '$controller.email',
-      'Password' : '$controller.password',
-    }
-  );
+  Map<String, String> headers = {
+    'Content-Type' : 'application/json',
+    'Accept' : 'application/json',
+  };
+  Map<String, String> data = {'email': '$controller.email', 'Password': '$controller.password'};
+  String url = 'https://192.168.0.108:9890/login';
+  var postUri = Uri.parse(url);
+  return http.post(postUri, headers: headers, body: jsonEncode(data));
 }
+
+// Flutter에서 POST 한 내용을 받아서 로그인 여부를
+
+
 
 class Session {
   Map<String, String> headers = {
@@ -98,10 +118,10 @@ class Session {
 
   Map<String, String> cookies = {};
 
-  Future<dynamic> get(Uri url) async {
+  Future<dynamic> get(String url) async {
     print('get() url: $url');
-    http.Response response =
-        await http.get(Uri.encodeFull(url), headers: headers);
+      http.Response response =
+          await http.get(Uri.parse(url), headers: headers);
     final int statusCode = response.statusCode;
     if (statusCode < 200 || statusCode > 400 || json == null) {
 
@@ -110,7 +130,7 @@ class Session {
   }
   Future<dynamic> post(String url, dynamic data) async {
     print('post() url: $url');
-    http.Response response = await http.post(Uri.encodeFull(url),
+    http.Response response = await http.post(Uri.parse(url),
       body: json.encode(data), headers: headers);
     final int statusCode = response.statusCode;
     if (statusCode < 200 || statusCode > 400 || json == null) {
@@ -119,3 +139,37 @@ class Session {
     return json.decode(utf8.decode(response.bodyBytes));
   }
 }
+
+class ResponseV0 {
+  final dynamic code;
+  final dynamic message;
+  final dynamic timestamp;
+  final dynamic response;
+
+  ResponseV0({this.code, this.message, this.timestamp, this.response});
+
+  factory ResponseV0.fromJSON(Map<String, dynamic> json, Future post) {
+    print('responseV0.code : ${json['code']}');
+    print('responseV0.message : ${json['message']}');
+    print('responseV0.timestamp : ${json['timestamp']}');
+    print('responseV0.response : ${json['response']}');
+
+    return ResponseV0(
+    code: json['code'],
+    message: json['message'],
+    timestamp: json['timestamp'],
+    response: json['response'],
+    );
+}
+}
+
+// final ResponseV0 responseV0 = ResponseV0.fromJSON(await new Session().post('$url/sample/user/login', null));
+//   if (responseV0 != null) {
+//     if (responseV0.code == SUCCESS) {
+//           Navigator.pushNamed(context, PlazaPage.PlazaPageRouteName);
+//     } else if (responseV0.code == SERVER_ERROR) {
+// showToast('error');
+// } else if (responseV0.code == INFORMATION_NOT_OBTAINED) {
+//       Navigator.pushNamed(context, JoinPage.JoinPageRouteName);
+// }
+// }

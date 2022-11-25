@@ -11,6 +11,8 @@ import 'package:image/image.dart' as img;
 
 import 'package:flutter/foundation.dart';
 
+import 'login_page.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -148,7 +150,27 @@ class CameraView extends StatefulWidget {
   final List<camlib.CameraDescription> cameras;
 
   const CameraView({Key? key, required this.cameras}) : super(key: key);
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import 'login_page.dart';
+
+void main() {
+  runApp(new MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'login demo',
+      theme: new ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: new LoginPage(),
+    );
+  }
+}
   @override
   _CameraViewState createState() => _CameraViewState();
 }
