@@ -1,11 +1,20 @@
 {
+<<<<<<< HEAD
     "name": "freshcls",
     "short_name": "freshcls",
+=======
+    "name": "login_page",
+    "short_name": "login_page",
+>>>>>>> 82bfcb0 (commit for pulling)
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
+<<<<<<< HEAD
     "description": "Client for fresh item classifier",
+=======
+    "description": "A new Flutter project.",
+>>>>>>> 82bfcb0 (commit for pulling)
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

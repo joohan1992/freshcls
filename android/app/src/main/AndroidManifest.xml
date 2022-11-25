@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<<<<<<< HEAD
     package="com.ri.freshcls.freshcls">
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -8,6 +9,11 @@
 
     <application
         android:label="freshcls"
+=======
+    package="com.example.login_page">
+   <application
+        android:label="login_page"
+>>>>>>> 82bfcb0 (commit for pulling)
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

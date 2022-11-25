@@ -5,7 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
+<<<<<<< HEAD
 	<string>Freshcls</string>
+=======
+	<string>Login Page</string>
+>>>>>>> 82bfcb0 (commit for pulling)
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +17,11 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
+<<<<<<< HEAD
 	<string>freshcls</string>
+=======
+	<string>login_page</string>
+>>>>>>> 82bfcb0 (commit for pulling)
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -47,9 +55,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+<<<<<<< HEAD
 	<key>NSCameraUsageDescription</key>
 	<string>camera</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Can I use the mic please?</string>
+=======
+>>>>>>> 82bfcb0 (commit for pulling)
 </dict>
 </plist>

@@ -27,6 +27,9 @@ linter:
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+<<<<<<< HEAD
 analyzer:
   errors:
     undefined_prefixed_name: ignore
+=======
+>>>>>>> 82bfcb0 (commit for pulling)

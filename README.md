@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 # freshcls
 
 Client for fresh item classifier
+=======
+# login_page
+
+A new Flutter project.
+>>>>>>> 82bfcb0 (commit for pulling)
 
 ## Getting Started
 
