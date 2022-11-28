@@ -152,12 +152,23 @@ class CameraView extends StatefulWidget {
   const CameraView({Key? key, required this.cameras}) : super(key: key);
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'dart:io' as io;
 import 'login_page.dart';
 
 void main() {
+  io.HttpOverrides.global = NoCheckCertificateHttpOverrides();
   runApp(new MyApp());
 }
+
+class NoCheckCertificateHttpOverrides extends io.HttpOverrides {
+  @override
+  io.HttpClient createHttpClient(io.SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (io.X509Certificate cert, String host, int port) => true;
+  }
+}
+
 
 class MyApp extends StatelessWidget {
   @override

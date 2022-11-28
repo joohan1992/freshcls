@@ -54,6 +54,7 @@ dependencies:
   http: ^0.13.5
   get: ^4.6.5
 >>>>>>> 82bfcb0 (commit for pulling)
+  async: ^2.3.0
 
 dev_dependencies:
   flutter_test:
