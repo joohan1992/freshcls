@@ -17,7 +17,10 @@ class _LoginPageState extends State<LoginPage> {
   late String id;
   late String password;
 
-  get result => null;
+  Map <String, String> resultMap = {};
+
+  Text title_text = Text('');
+  Text act_text = Text('');
 
   void validateAndSave() {
     final form = formKey.currentState;
@@ -29,50 +32,96 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: new AppBar(
-        title: new Text('login demo'),
-      ),
-      body: Container(
-          padding: EdgeInsets.all(16),
-          child: Form(
-            key: formKey,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+  loginFailure(BuildContext context, resultMap) {
+    if (resultMap['log_in_st'] == "0") {
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => const LoginSuccess()));
+    }
+    else {
+      if (resultMap['log_in_st'] == "1") {
+        title_text = Text('인증 실패', textAlign: TextAlign.left,);
+        act_text = Text(resultMap['log_in_text'], textAlign: TextAlign.center,);
+      }
+      else if (resultMap['log_in_st'] == "2") {
+        title_text = Text('로그인 실패', textAlign: TextAlign.left,);
+        act_text = Text(resultMap['log_in_text'], textAlign: TextAlign.center,);
+      }
+      else if (resultMap['log_in_st'] == "3") {
+        title_text = Text('로그인 실패', textAlign: TextAlign.left,);
+        act_text = Text(resultMap['log_in_text'], textAlign: TextAlign.center,);
+      }
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: title_text,
+            content: SingleChildScrollView(
+              child: ListBody(
                 children: <Widget>[
-                  new TextFormField(
-                    decoration: new InputDecoration(labelText: 'Id'),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Id can\'t be empty' : null,
-                    onSaved: (value) => id = value!,
-                    onChanged: (value) => id = value,
-                  ),
-                  new TextFormField(
-                    obscureText: true,
-                    decoration: new InputDecoration(labelText: 'Password'),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Password can\'t be empty' : null,
-                    onSaved: (value) => password = value!,
-                    onChanged: (value) => password = value,
-                  ),
-                  ElevatedButton(
-                    child: new Text(
-                      'Login',
-                      style: new TextStyle(fontSize: 20.0),
-                    ),
-                    onPressed: () {
-                      validateAndSave();
-                      var result = requestPost(id, password);
-                      // loginFailure(context, result);
-                    },
-                  ),
-                ]),
-          )),
-    );
+                  act_text,
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('확인'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
-}
+
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: new AppBar(
+      title: new Text('login demo'),
+    ),
+    body: Container(
+        padding: EdgeInsets.all(16),
+        child: Form(
+          key: formKey,
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                new TextFormField(
+                  decoration: new InputDecoration(labelText: 'Id'),
+                  validator: (value) =>
+                  value!.isEmpty ? 'Id can\'t be empty' : null,
+                  onSaved: (value) => id = value!,
+                  onChanged: (value) => id = value,
+                ),
+                new TextFormField(
+                  obscureText: true,
+                  decoration: new InputDecoration(labelText: 'Password'),
+                  validator: (value) =>
+                  value!.isEmpty ? 'Password can\'t be empty' : null,
+                  onSaved: (value) => password = value!,
+                  onChanged: (value) => password = value,
+                ),
+                ElevatedButton(
+                  child: new Text(
+                    'Login',
+                    style: new TextStyle(fontSize: 20.0),
+                  ),
+                  onPressed: () async {
+                    validateAndSave();
+                    Map<String, String> resultMap = await requestPost(
+                        id, password);
+                    loginFailure(context, resultMap);
+                  },
+                ),
+              ]),
+        )),
+  );
+}}
 
 // Flutter에서 controller로 입력 받은 내용을 Flask url로 POST하는 코드
 
@@ -81,10 +130,17 @@ requestPost(id, password) async {
   var url = "https://192.168.0.108:2092/login";
   var postUri = Uri.parse(url);
   var res = await http.post(postUri, body: data);
+  String resBody = utf8.decode(res.bodyBytes);
+  Map<String, dynamic> resultmap = jsonDecode(resBody);
+  Map<String, String> resultMap = {};
+  resultMap['log_in_st'] = resultmap['log_in_st'].toString();
+  resultMap['str_no'] = resultmap['str_no'].toString();
+  resultMap['login_no'] = resultmap['login_no'].toString();
+  resultMap['act_yn'] = resultmap['act_yn'].toString();
+  resultMap['log_in_text'] = resultmap['log_in_text'].toString();
   print(res.body);
-  Map<String, dynamic> result = jsonDecode(res.body);
-  print(result);
-  return result;
+  // print(resultMap);
+  return resultMap;
 }
 
 // Flutter에서 POST 한 내용을 받아서 로그인 성공 여부와 id, password, activated 여부를 띄워주는 page
@@ -99,58 +155,20 @@ class LoginSuccess extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           child: const Text('로그인 성공 페이지입니다.'),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
     );
   }
 }
 
-loginFailure(BuildContext context, result) async {
-  if (result['id_right'] == 'Y' && result['pw_right'] == 'Y') {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) => LoginSuccess()));
-    if (result['id_right'] == 'Y' && result['pw_right'] == 'N') {
-      Text('로그인 오류.');
-      Text('비밀번호가 틀렸습니다.',
-          textAlign: TextAlign.left,
-          style: TextStyle(fontWeight: FontWeight.bold));
-    }
-    if (result['id_right'] == 'N' && result['pw_right'] == 'Y') {
-      Text('로그인 오류.');
-      Text('아이디가 틀렸습니다.',
-          textAlign: TextAlign.left,
-          style: TextStyle(fontWeight: FontWeight.bold));
-    }
-    ;
-    if (result['id_right'] == 'N' && result['pw_right'] == 'N') {
-      Text('로그인 오류');
-      Text('아이디와 비밀번호가 둘 다 틀렸습니다.',
-          textAlign: TextAlign.left,
-          style: TextStyle(fontWeight: FontWeight.bold));
-    }
-    ;
-  };
-  if (result['act_yn'] == 'N') {
-    String act_text = '인증되지 않은 계정입니다.';
-    return AlertDialog(
-      content: Text(act_text),
-      actions: [
-        ElevatedButton(
-          child: Text('돌아가기'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
-  }
-}
 
-showSnackBar(BuildContext context, Text text) {
-  final snackBar = SnackBar(
-    content: text,
-    backgroundColor: Colors.blueAccent,
-  );
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-}
+// showSnackBar(BuildContext context, Text text) {
+//   final snackBar = SnackBar(
+//     content: text,
+//     backgroundColor: Colors.blueAccent,
+//   );
+//   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+// }
